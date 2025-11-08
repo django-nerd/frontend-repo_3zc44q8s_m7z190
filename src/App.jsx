@@ -1,45 +1,43 @@
-import React from 'react';
-import AircraftViewer, { AIRCRAFT_DATA } from './components/AircraftViewer';
-import RouteVisualizer, { ROUTE_OPTIONS } from './components/RouteVisualizer';
-import AirlineCustomizer, { AIRLINES_DATA } from './components/AirlineCustomizer';
-import Checkout from './components/Checkout';
+import React, { useState } from 'react';
 import { Rocket } from 'lucide-react';
+import AircraftViewer, { AIRCRAFT_DATA } from './components/AircraftViewer';
+import RoutePlanner, { ROUTE_OPTIONS } from './components/RoutePlanner';
+import OperatorPicker, { OPERATORS } from './components/OperatorPicker';
+import SummaryCheckout from './components/SummaryCheckout';
 
 export default function App() {
-  const [aircraft, setAircraft] = React.useState(AIRCRAFT_DATA[0]);
-  const [airline, setAirline] = React.useState(AIRLINES_DATA[0]);
-  const [route, setRoute] = React.useState(ROUTE_OPTIONS[0]);
+  const [aircraft, setAircraft] = useState(AIRCRAFT_DATA[0]);
+  const [route, setRoute] = useState(ROUTE_OPTIONS[0]);
+  const [operator, setOperator] = useState(OPERATORS[0]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-200">
-      <header className="sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-slate-950/60 border-b border-white/10">
+    <div className="min-h-screen bg-gradient-to-b from-white to-neutral-50 text-neutral-900">
+      <header className="sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 border-b">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-semibold text-white">
-            <Rocket className="w-5 h-5 text-sky-400" /> HanzTravel
+          <div className="flex items-center gap-2 font-semibold">
+            <Rocket className="text-blue-600" size={20} />
+            Air Charter
           </div>
-          <div className="text-xs text-white/70">© 2025 HanzTravel — Visit the Whole World</div>
+          <div className="text-sm text-neutral-600">3D plane, 2D everything else</div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        <section className="text-center space-y-3">
-          <h1 className="text-3xl sm:text-4xl font-semibold text-white tracking-tight">Explore, Customize, and Book Your Flight</h1>
-          <p className="text-white/70 max-w-2xl mx-auto">Interactive 3D aircraft, animated routes, and a streamlined checkout — crafted with precision and designed for unforgettable journeys.</p>
-        </section>
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        {/* 3D aircraft only; the rest is 2D UI */}
+        <AircraftViewer selected={aircraft} onSelect={setAircraft} />
 
-        <AircraftViewer selectedAircraftId={aircraft.id} onSelect={setAircraft} />
-
-        <RouteVisualizer selectedAircraft={aircraft} onChange={setRoute} />
-
-        <AirlineCustomizer selected={airline} onChange={setAirline} />
-
-        <Checkout aircraft={aircraft} route={route} airline={airline} />
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <RoutePlanner aircraft={aircraft} selected={route} onSelect={setRoute} />
+            <OperatorPicker selected={operator} onSelect={setOperator} />
+          </div>
+          <div className="lg:col-span-1">
+            <SummaryCheckout aircraft={aircraft} route={route} operator={operator} />
+          </div>
+        </div>
       </main>
 
-      <footer className="px-4 py-8 text-center text-white/70">
-        <div>© 2025 HanzTravel — Visit the Whole World</div>
-        <div className="text-xs">Crafted with precision and passion.</div>
-      </footer>
+      <footer className="py-8 text-center text-sm text-neutral-500">© {new Date().getFullYear()} Air Charter</footer>
     </div>
   );
 }

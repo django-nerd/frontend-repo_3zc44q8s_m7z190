@@ -1,82 +1,82 @@
 import React from 'react';
 import Spline from '@splinetool/react-spline';
-import { Plane, Sun, Unlock } from 'lucide-react';
+import { Plane, Users } from 'lucide-react';
 
-const AIRCRAFTS = [
+export const AIRCRAFT_DATA = [
   {
-    id: 'b777x',
-    name: 'Boeing 777X',
-    speedKts: 560,
-    rangeKm: 13650,
-    sceneUrl: 'https://prod.spline.design/1s8bI8n6HSpQX04Q/scene.splinecode',
-    animations: ['Wing flex', 'Cabin lights', 'Door open'],
+    id: 'g650',
+    name: 'Gulfstream G650',
+    speedKnots: 516, // typical cruise
+    rangeKm: 12964,
+    seats: 14,
+    sceneUrl: 'https://prod.spline.design/3FzjHq1Xz5sG0i8x/scene.splinecode',
   },
   {
-    id: 'a380',
-    name: 'Airbus A380',
-    speedKts: 545,
-    rangeKm: 15200,
-    sceneUrl: 'https://prod.spline.design/9h6vUuJm4bJxk0Qw/scene.splinecode',
-    animations: ['Flaps move', 'Cabin lights', 'Door open'],
+    id: 'global7500',
+    name: 'Bombardier Global 7500',
+    speedKnots: 513,
+    rangeKm: 14260,
+    seats: 16,
+    sceneUrl: 'https://prod.spline.design/iQ6Y4m8jz2bS7W7g/scene.splinecode',
   },
   {
-    id: 'a350',
-    name: 'Airbus A350',
-    speedKts: 575,
-    rangeKm: 15000,
-    sceneUrl: 'https://prod.spline.design/7gStH0CzE7zZ5ZyI/scene.splinecode',
-    animations: ['Wing flex', 'Beacon lights', 'Door open'],
+    id: 'falcon8x',
+    name: 'Dassault Falcon 8X',
+    speedKnots: 488,
+    rangeKm: 11945,
+    seats: 14,
+    sceneUrl: 'https://prod.spline.design/Tz8cKz2m1r6h2iNn/scene.splinecode',
   },
 ];
 
-export default function AircraftViewer({ selectedAircraftId, onSelect }) {
-  const selected = AIRCRAFTS.find((a) => a.id === selectedAircraftId) || AIRCRAFTS[0];
-
+function AircraftCard({ aircraft, active, onClick }) {
   return (
-    <section className="w-full grid lg:grid-cols-2 gap-6 items-stretch">
-      <div className="relative h-[360px] sm:h-[420px] rounded-xl overflow-hidden ring-1 ring-white/10 bg-gradient-to-b from-slate-800 to-slate-900">
-        {/* 3D Aircraft Scene */}
-        <Spline scene={selected.sceneUrl} style={{ width: '100%', height: '100%' }} />
-        {/* Soft gradient overlay that does not block interactions */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
-        <div className="absolute left-4 bottom-4 text-white/90 space-y-1">
-          <div className="flex items-center gap-2 font-medium">
-            <Plane className="w-4 h-4" />
-            <span>{selected.name}</span>
+    <button
+      onClick={onClick}
+      className={`flex items-center justify-between w-full rounded-xl border px-4 py-3 transition-colors ${
+        active ? 'border-blue-600 bg-blue-50' : 'border-neutral-200 hover:bg-neutral-50'
+      }`}
+      aria-pressed={active}
+    >
+      <div className="flex items-center gap-3 text-left">
+        <div className={`p-2 rounded-lg ${active ? 'bg-blue-600 text-white' : 'bg-neutral-100 text-neutral-700'}`}>
+          <Plane size={18} />
+        </div>
+        <div>
+          <div className="font-medium text-neutral-900">{aircraft.name}</div>
+          <div className="text-xs text-neutral-500 flex items-center gap-3">
+            <span>{Math.round(aircraft.rangeKm / 1000)}k km range</span>
+            <span className="inline-flex items-center gap-1"><Users size={14} /> {aircraft.seats}</span>
           </div>
-          <p className="text-xs text-white/70">Rotate and zoom to explore. Animations: {selected.animations.join(', ')}.</p>
         </div>
       </div>
+      <div className="text-xs text-neutral-500">{Math.round(aircraft.speedKnots)} kt</div>
+    </button>
+  );
+}
 
-      <div className="p-4 sm:p-6 rounded-xl bg-slate-900 ring-1 ring-white/10">
-        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
-          <Plane className="w-5 h-5" /> Aircraft Selector
-        </h3>
-        <div className="grid sm:grid-cols-3 gap-3">
-          {AIRCRAFTS.map((a) => (
-            <button
-              key={a.id}
-              onClick={() => onSelect(a)}
-              className={`text-left px-4 py-3 rounded-lg transition ring-1 focus:outline-none focus:ring-2 focus:ring-sky-400/50 ${
-                selected.id === a.id
-                  ? 'bg-sky-500/10 ring-sky-400/30'
-                  : 'bg-slate-800/60 ring-white/10 hover:bg-slate-800'
-              }`}
-            >
-              <div className="font-medium text-white">{a.name}</div>
-              <div className="text-xs text-white/70">Cruise {a.speedKts} kts • Range {a.rangeKm.toLocaleString()} km</div>
-            </button>
-          ))}
-        </div>
+export default function AircraftViewer({ selected, onSelect }) {
+  const active = selected || AIRCRAFT_DATA[0];
 
-        <div className="mt-4 grid grid-cols-3 gap-2 text-white/80 text-xs">
-          <span className="inline-flex items-center gap-1 bg-slate-800/60 rounded px-2 py-1"><Sun className="w-3 h-3" /> Cabin lights</span>
-          <span className="inline-flex items-center gap-1 bg-slate-800/60 rounded px-2 py-1"><Plane className="w-3 h-3" /> Wing flex</span>
-          <span className="inline-flex items-center gap-1 bg-slate-800/60 rounded px-2 py-1"><Unlock className="w-3 h-3" /> Doors</span>
-        </div>
+  return (
+    <section className="relative h-[420px] sm:h-[520px] rounded-2xl overflow-hidden bg-black">
+      {/* 3D Spline only for the aircraft */}
+      <Spline scene={active.sceneUrl} style={{ width: '100%', height: '100%' }} />
+
+      {/* Non-blocking gradient overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+      {/* Aircraft selector (2D UI) */}
+      <div className="absolute left-4 right-4 bottom-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {AIRCRAFT_DATA.map((ac) => (
+          <AircraftCard
+            key={ac.id}
+            aircraft={ac}
+            active={ac.id === active.id}
+            onClick={() => onSelect(ac)}
+          />
+        ))}
       </div>
     </section>
   );
 }
-
-export const AIRCRAFT_DATA = AIRCRAFTS;
